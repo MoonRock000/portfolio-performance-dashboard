@@ -18,7 +18,11 @@
    ```
 
 3. **Open your browser**
-   Navigate to `http://localhost:8080` to view the application
+   **Locally**
+      Navigate to `http://localhost:8080` to view the application
+   **Production**
+     Navigate to `https://portfolio-performance-dashboard.vercel.app` to view the application
+   
 
 ### Building for Production
 
