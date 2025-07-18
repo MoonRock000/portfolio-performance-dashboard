@@ -1,13 +1,19 @@
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { TrendingUp, PieChart, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Navigation = () => {
+  const location = useLocation();
+  
   const navItems = [
     { to: "/performance", label: "Performance", icon: TrendingUp },
     { to: "/holdings", label: "Holdings", icon: PieChart },
   ];
+
+  const isActiveTab = (to: string) => {
+    return location.pathname === to;
+  };
 
   return (
     <nav className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
@@ -28,10 +34,10 @@ export const Navigation = () => {
               <NavLink
                 key={to}
                 to={to}
-                className={({ isActive }) =>
+                className={() =>
                   cn(
                     "flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
-                    isActive
+                    isActiveTab(to)
                       ? "bg-primary text-primary-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   )

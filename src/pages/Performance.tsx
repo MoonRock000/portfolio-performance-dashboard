@@ -20,6 +20,33 @@ const Performance = () => {
     msciWorld: ((latestData.benchmarkMSCIWorld - performanceData[0].benchmarkMSCIWorld) / performanceData[0].benchmarkMSCIWorld) * 100,
   };
 
+  // Calculate month-over-month returns
+  const monthlyReturns = performanceData.slice(1).map((current, index) => {
+    const previous = performanceData[index];
+    const monthReturn = ((current.portfolioValue - previous.portfolioValue) / previous.portfolioValue) * 100;
+    return {
+      date: current.date,
+      return: monthReturn,
+      monthName: format(new Date(current.date), 'MMMM yyyy')
+    };
+  });
+
+  // Find best and worst months
+  const bestMonth = monthlyReturns.reduce((best, current) => 
+    current.return > best.return ? current : best
+  );
+  
+  const worstMonth = monthlyReturns.reduce((worst, current) => 
+    current.return < worst.return ? current : worst
+  );
+
+  // Calculate annualized volatility
+  const returns = monthlyReturns.map(m => m.return);
+  const avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+  const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+  const monthlyVol = Math.sqrt(variance);
+  const annualizedVol = monthlyVol * Math.sqrt(12);
+
   const timeSeriesLength = performanceData.length;
   const startDate = format(new Date(performanceData[0].date), 'MMM d, yyyy');
   const endDate = format(new Date(latestData.date), 'MMM d, yyyy');
@@ -70,17 +97,17 @@ const Performance = () => {
           <div className="mt-6 pt-6 border-t grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 rounded-lg bg-muted/30">
               <p className="text-sm text-muted-foreground">Best Month</p>
-              <p className="text-lg font-bold text-success">+12.4%</p>
-              <p className="text-xs text-muted-foreground">March 2024</p>
+              <p className="text-lg font-bold text-success">+{bestMonth.return.toFixed(2)}%</p>
+              <p className="text-xs text-muted-foreground">{bestMonth.monthName}</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-muted/30">
               <p className="text-sm text-muted-foreground">Worst Month</p>
-              <p className="text-lg font-bold text-destructive">-8.2%</p>
-              <p className="text-xs text-muted-foreground">October 2023</p>
+              <p className="text-lg font-bold text-destructive">{worstMonth.return.toFixed(2)}%</p>
+              <p className="text-xs text-muted-foreground">{worstMonth.monthName}</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-muted/30">
               <p className="text-sm text-muted-foreground">Volatility</p>
-              <p className="text-lg font-bold text-foreground">14.2%</p>
+              <p className="text-lg font-bold text-foreground">{annualizedVol.toFixed(1)}%</p>
               <p className="text-xs text-muted-foreground">Annualized</p>
             </div>
           </div>
